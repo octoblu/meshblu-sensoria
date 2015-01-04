@@ -1,4 +1,5 @@
 'use strict';
+
 var util         = require('util');
 var EventEmitter = require('events').EventEmitter;
 var noble        = require('noble');
@@ -27,9 +28,10 @@ function Plugin(){
   self.optionsSchema = OPTIONS_SCHEMA;
   self.foundOne = false;
 
+  self.throttledEmit = _.throttle(self.emit, 1000);
+
   return _.bindAll(this);
 }
-util.inherits(Plugin, EventEmitter);
 
 Plugin.prototype.onMessage = function(message){
 };
@@ -55,7 +57,7 @@ Plugin.prototype.setOptions = function(options){
     characteristic.on('read', function(data){
       var sensorData = parseSensoria(data);
       debug('characteristic', sensorData);
-      self.emit('data', {data: sensorData});
+      self.throttledEmit('data', {data: sensorData});
     });
   });
 };
@@ -89,6 +91,8 @@ Plugin.prototype.subscribeToSensoria = function(peripheral, callback){
     });
   });
 };
+
+util.inherits(Plugin, EventEmitter);
 
 module.exports = {
   messageSchema: MESSAGE_SCHEMA,
