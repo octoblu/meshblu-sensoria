@@ -1,5 +1,4 @@
 'use strict';
-
 var util         = require('util');
 var EventEmitter = require('events').EventEmitter;
 var noble        = require('noble');
@@ -32,6 +31,7 @@ function Plugin(){
 
   return _.bindAll(this);
 }
+util.inherits(Plugin, EventEmitter);
 
 Plugin.prototype.onMessage = function(message){
 };
@@ -91,8 +91,6 @@ Plugin.prototype.subscribeToSensoria = function(peripheral, callback){
     });
   });
 };
-
-util.inherits(Plugin, EventEmitter);
 
 module.exports = {
   messageSchema: MESSAGE_SCHEMA,
