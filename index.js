@@ -5,7 +5,7 @@ var noble        = require('noble');
 var async        = require('async');
 var _            = require('lodash');
 var debug        = require('debug')('meshblu-sensoria:index');
-var parseSensoria = require('./parse-heart-rate');
+var parseSensoria = require('./parse-sensoria');
 
 var MESSAGE_SCHEMA = {
   type: 'object',
@@ -53,9 +53,9 @@ Plugin.prototype.setOptions = function(options){
     }
 
     characteristic.on('read', function(data){
-      var rate = parseSensoria(data);
-      debug('characteristic', rate);
-      self.emit('data', {data: rate});
+      var sensorData = parseSensoria(data);
+      debug('characteristic', sensorData);
+      self.emit('data', {data: sensorData});
     });
   });
 };
