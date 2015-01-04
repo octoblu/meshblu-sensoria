@@ -27,8 +27,6 @@ function Plugin(){
   self.optionsSchema = OPTIONS_SCHEMA;
   self.foundOne = false;
 
-  self.throttledEmit = _.throttle(self.emit, 1000);
-
   return _.bindAll(this);
 }
 util.inherits(Plugin, EventEmitter);
@@ -54,11 +52,8 @@ Plugin.prototype.setOptions = function(options){
       return;
     }
 
-    characteristic.on('read', function(data){
-      var sensorData = parseSensoria(data);
-      debug('characteristic', sensorData);
-      self.throttledEmit('data', {data: sensorData});
-    });
+    characteristic.on('read', _.throttle(self.broadcastCharacteristic, 1000));
+
   });
 };
 
@@ -91,6 +86,13 @@ Plugin.prototype.subscribeToSensoria = function(peripheral, callback){
     });
   });
 };
+
+Plugin.prototype.broadcastCharacteristic = function(data){
+  var sensorData = parseSensoria(data);
+  debug('characteristic', sensorData);
+  this.emit('data', {data: sensorData});
+};
+
 
 module.exports = {
   messageSchema: MESSAGE_SCHEMA,
