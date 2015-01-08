@@ -7,6 +7,8 @@ var _            = require('lodash');
 var debug        = require('debug')('meshblu-sensoria:index');
 var parseSensoria = require('./parse-sensoria');
 
+_.string     = require('underscore.string');
+
 var MESSAGE_SCHEMA = {
   type: 'object',
   properties: {}
@@ -61,7 +63,7 @@ Plugin.prototype.connectToSensoria = function(callback){
   debug('connectToSensoria');
   var self = this;
   noble.on('discover', function(peripheral){
-    if (peripheral.advertisement.localName !== 'Sensoria-F1-0290') { return; }
+    if(!_.string.startsWith(peripheral.advertisement.localName, 'Sensoria-F1')) { return; }
     if(self.foundOne){return;}
     self.foundOne = true;
     debug('discovered', peripheral.uuid);
