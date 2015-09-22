@@ -1,7 +1,7 @@
 {
   "name": "meshblu-sensoria",
   "repository": "octoblu/meshblu-sensoria",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "main": "connector.js",
   "scripts": {
     "preinstall": "node -e \"try{require('./skip-install.js')}catch(e){}\"",
@@ -22,10 +22,25 @@
     "fstream"
   ],
   "platformDependencies": {
-    "darwin": [],
-    "win32": [],
-    "win64": [],
-    "linux": [],
+    "darwin": [
+      "xcode"
+    ],
+    "win32": [
+      "Python 2.7",
+      "Visual Studio (Express)",
+      "Compatible Bluetooth 4.0 USB adapter",
+      "WinUSB driver setup for Bluetooth 4.0 USB adapter, using Zadig tool"
+    ],
+    "win64": [
+      "Python 2.7",
+      "Visual Studio (Express)",
+      "Compatible Bluetooth 4.0 USB adapter",
+      "WinUSB driver setup for Bluetooth 4.0 USB adapter, using Zadig tool"
+    ],
+    "linux": [
+      "Kernel version 3.6 or above",
+      "libbluetooth-dev"
+    ],
     "android": [],
     "ios": []
   },
