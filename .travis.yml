@@ -1,26 +1,40 @@
 language: node_js
-cache:
-  bundler: true
-  directories:
-    - node_modules
-notifications:
-  flowdock: e7454f5285e7b9ab67009802d5560490
 node_js:
 - '0.10'
-deploy:
-  provider: npm
-  skip_cleanup: true
-  clean_up: false
-  email: serveradmin@octoblu.com
-  api_key:
-    secure: XXTyhNc4J0E73caAE0lctSTQrme3Fq7UGuArGUKWHdAln3nhd+tlqm41wRRsesnkmtLQT6cz9+vkzR8CbThcmhza1lyxC007TzhyiDfJln/ORqpkP6pzMM7SlOd57rNKQGuVVzf7bwMgFhrpa1gaK2Q0wlPpbOr0NMoJnQhIU6o=
-  on:
-    tags: true
-    all_branches: true
+addons:
+  apt:
+    packages:
+    - libbluetooth-dev
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq libbluetooth-dev
+  - npm install npm -g
 before_deploy:
-  - npm install ws browserify
-  - mkdir deploy
-  - node_modules/.bin/browserify -s Connector connector.js > deploy/meshblu-sensoria.js
+  - npm install ws browserify coffeeify
+  - mkdir -p deploy/meshblu-sensoria/latest
+  - mkdir -p deploy/meshblu-sensoria/$TRAVIS_TAG
+  - node_modules/.bin/browserify -t coffeeify -s Connector connector.js > deploy/meshblu-sensoria/latest/meshblu-sensoria.js
+  - gzip deploy/meshblu-sensoria/latest/meshblu-sensoria.js
+  - mv deploy/meshblu-sensoria/latest/meshblu-sensoria.js.gz deploy/meshblu-sensoria/latest/meshblu-sensoria.js
+  - cp deploy/meshblu-sensoria/latest/meshblu-sensoria.js deploy/meshblu-sensoria/$TRAVIS_TAG/meshblu-sensoria.js
+deploy:
+  - provider: s3
+    region: us-west-2
+    skip_cleanup: true
+    detect_encoding: true
+    access_key_id: AKIAJH2D5IPIRHYJT5IA
+    secret_access_key:
+      secure: "OFCZ0iS7zT1B/a7T0JqEYenWglkT8NLd9ifCyusWdgx5SsALpFbv+YxnWWRw9GiOY1EpAgHdTTLnx/53r9j2IthwmANFaYwTqmQhHonv3fdHFrolv7hpAI7rsoAg5piPV2wpNM5MTx8M4IGHDxLm4FJAuWaxZRi8MIFz526qN1U="
+    bucket: octoblu-cdn
+    local-dir: deploy
+    upload-dir: js
+    on:
+      tags: true
+      all_branches: true
+  - provider: npm
+    skip_cleanup: true
+    clean_up: false
+    email: serveradmin@octoblu.com
+    api_key:
+      secure: "cdVhFLmHr3MCJnWT4aPRV8JUosE+MREt63oUds+KCUszlH62SKYSbq+pBhpmUchGQ70eelHgj1X9D5lovNaP07VFNix2Xyg7wXb8EpgOE8cnAZYKV7/Horkp/IN6Pr6jP1/5yce6LEz4QLd6IW54IqvvKmQtx73GmsAYNEBcDvQ="
+    on:
+      tags: true
+      all_branches: true
